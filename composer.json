@@ -23,6 +23,12 @@
         "cakephp/cakephp-codesniffer": "^3.0",
         "php-coveralls/php-coveralls": "^2.1"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:CakeDC/php-queuesadilla.git"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Josegonzalez\\CakeQueuesadilla\\": "src",
