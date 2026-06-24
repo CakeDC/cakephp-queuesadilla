@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Josegonzalez\CakeQueuesadilla\Queue;
 
-use Cake\Core\ObjectRegistry;
 use Cake\Core\StaticConfigTrait;
 use Cake\Utility\Hash;
 use InvalidArgumentException;
@@ -66,7 +65,7 @@ class Queue
      *
      * @var array
      */
-    protected static $_dsnClassMap = [
+    protected static array $_dsnClassMap = [
         'beanstalk' => 'josegonzalez\Queuesadilla\Engine\BeanstalkEngine',
         'iron' => 'josegonzalez\Queuesadilla\Engine\IronEngine',
         'memory' => 'josegonzalez\Queuesadilla\Engine\MemoryEngine',
@@ -82,28 +81,28 @@ class Queue
      *
      * @var bool
      */
-    protected static $_dirtyConfig = false;
+    protected static bool $_dirtyConfig = false;
 
     /**
      * Flag for tracking whether or not queueing is enabled.
      *
      * @var bool
      */
-    protected static $_enabled = true;
+    protected static bool $_enabled = true;
 
     /**
      * Used to manage individual queue engines attached to an actual queuer
      *
      * @var array
      */
-    protected static $_queuers = [];
+    protected static array $_queuers = [];
 
     /**
      * Queue Registry used for creating and using queue engines.
      *
      * @var \Josegonzalez\CakeQueuesadilla\Queue\QueueEngineRegistry
      */
-    protected static $_registry;
+    protected static ?QueueEngineRegistry $_registry = null;
 
     /**
      * Initializes registry and configurations
@@ -191,10 +190,10 @@ class Queue
      * Returns the Queue Registry instance used for creating and using queue engines.
      * Also allows for injecting of a new registry instance.
      *
-     * @param \Cake\Core\ObjectRegistry|null $registry Injectable registry object.
-     * @return \Cake\Core\ObjectRegistry
+     * @param \Josegonzalez\CakeQueuesadilla\Queue\QueueEngineRegistry|null $registry Injectable registry object.
+     * @return \Josegonzalez\CakeQueuesadilla\Queue\QueueEngineRegistry
      */
-    public static function registry(?ObjectRegistry $registry = null): ObjectRegistry
+    public static function registry(?QueueEngineRegistry $registry = null): QueueEngineRegistry
     {
         if ($registry) {
             static::$_registry = $registry;
@@ -220,7 +219,7 @@ class Queue
 
         if (empty(static::$_config[$name]['className'])) {
             throw new InvalidArgumentException(
-                sprintf('The "%s" queue configuration does not exist.', $name)
+                sprintf('The "%s" queue configuration does not exist.', $name),
             );
         }
 

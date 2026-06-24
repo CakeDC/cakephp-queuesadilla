@@ -19,10 +19,8 @@ class QueueEngineRegistry extends ObjectRegistry
     /**
      * Resolve a queue engine classname.
      *
-     * Part of the template method for Cake\Core\ObjectRegistry::load()
-     *
      * @param string $class Partial classname to resolve.
-     * @return string Either the correct classname or null.
+     * @return class-string|null Either the correct classname or null.
      */
     protected function _resolveClassName(string $class): ?string
     {
@@ -31,8 +29,6 @@ class QueueEngineRegistry extends ObjectRegistry
 
     /**
      * Throws an exception when a queue engine is missing.
-     *
-     * Part of the template method for Cake\Core\ObjectRegistry::load()
      *
      * @param string $class The classname that is missing.
      * @param string|null $plugin The plugin the queue engine is missing in.
@@ -47,11 +43,9 @@ class QueueEngineRegistry extends ObjectRegistry
     /**
      * Create the queue engine instance.
      *
-     * Part of the template method for Cake\Core\ObjectRegistry::load()
-     *
-     * @param string|\josegonzalez\Queuesadilla\Engine\EngineInterface $class The classname or object to make.
+     * @param \josegonzalez\Queuesadilla\Engine\EngineInterface|callable|string $class The classname or object to make.
      * @param string $alias The alias of the object.
-     * @param array $settings An array of settings to use for the queue engine.
+     * @param array<string, mixed> $settings An array of settings to use for the queue engine.
      * @return \josegonzalez\Queuesadilla\Engine\EngineInterface The constructed queue engine class.
      * @throws \RuntimeException when an object doesn't implement the correct interface.
      */
@@ -75,11 +69,7 @@ class QueueEngineRegistry extends ObjectRegistry
                 $logger = Log::engine('debug');
             }
 
-            if ($logger === false) {
-                $logger = null;
-            }
-
-            $instance = new $class($logger, $settings);
+            $instance = new $class($logger instanceof LoggerInterface ? $logger : null, $settings);
         }
 
         if ($instance instanceof EngineInterface) {
@@ -87,7 +77,7 @@ class QueueEngineRegistry extends ObjectRegistry
         }
 
         throw new RuntimeException(
-            'Queue Engines must implement josegonzalez\Queuesadilla\Engine\EngineInterface.'
+            'Queue Engines must implement josegonzalez\Queuesadilla\Engine\EngineInterface.',
         );
     }
 
@@ -95,10 +85,12 @@ class QueueEngineRegistry extends ObjectRegistry
      * Remove a single queue engine from the registry.
      *
      * @param string $name The queue engine name.
-     * @return void
+     * @return $this
      */
-    public function unload(string $name): void
+    public function unload(string $name)
     {
         unset($this->_loaded[$name]);
+
+        return $this;
     }
 }

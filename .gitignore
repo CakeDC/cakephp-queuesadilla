@@ -1,2 +1,5 @@
 vendor/
 composer.lock
+/packages/queuesadilla/.phpunit.result.cache
+/packages/queuesadilla/.phpunit.cache
+/.phpunit.result.cache

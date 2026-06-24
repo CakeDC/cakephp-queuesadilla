@@ -1,15 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace Josegonzalez\CakeQueuesadilla\Test\Queue;
+namespace Josegonzalez\CakeQueuesadilla\Test\TestCase\Queue;
 
+use BadMethodCallException;
 use Cake\Log\Log;
 use Cake\TestSuite\TestCase;
+use InvalidArgumentException;
 use Josegonzalez\CakeQueuesadilla\Queue\Queue;
+use josegonzalez\Queuesadilla\Engine\MysqlEngine;
+use RuntimeException;
+use stdClass;
 
 /**
  * QueueTest class
- *
  */
 class QueueTest extends TestCase
 {
@@ -18,7 +22,7 @@ class QueueTest extends TestCase
      *
      * @return void
      */
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         Log::reset();
@@ -30,7 +34,7 @@ class QueueTest extends TestCase
      *
      * @return void
      */
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         parent::tearDown();
         Log::reset();
@@ -44,7 +48,7 @@ class QueueTest extends TestCase
      */
     public function testImportingQueueEngineFailure(): void
     {
-        $this->expectException('\InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
 
         Queue::setConfig('fail', []);
         Queue::engine('fail');
@@ -62,7 +66,7 @@ class QueueTest extends TestCase
             'url' => 'mysql://username:password@localhost:80/database',
         ]);
         $engine = Queue::engine('valid');
-        $this->assertInstanceOf('josegonzalez\Queuesadilla\Engine\MysqlEngine', $engine);
+        $this->assertInstanceOf(MysqlEngine::class, $engine);
     }
 
     /**
@@ -72,9 +76,9 @@ class QueueTest extends TestCase
      */
     public function testNotImplementingInterface(): void
     {
-        $this->expectException('\RuntimeException');
+        $this->expectException(RuntimeException::class);
 
-        Queue::setConfig('fail', ['engine' => '\stdClass']);
+        Queue::setConfig('fail', ['engine' => stdClass::class]);
         Queue::engine('fail');
     }
 
@@ -105,7 +109,7 @@ class QueueTest extends TestCase
      */
     public function testConfigErrorOnReconfigure(): void
     {
-        $this->expectException('\BadMethodCallException');
+        $this->expectException(BadMethodCallException::class);
 
         Queue::setConfig('tests', ['url' => 'mysql://username:password@localhost:80/database']);
         Queue::setConfig('tests', ['url' => 'null://']);
@@ -118,7 +122,6 @@ class QueueTest extends TestCase
      */
     public function testReset(): void
     {
-        // Set the initial config
         Queue::setConfig('test', [
             'url' => 'null://',
         ]);
@@ -127,10 +130,8 @@ class QueueTest extends TestCase
         $engine = Queue::engine('test');
         $queue = Queue::queue('test');
 
-        // Reset the queue
         Queue::reset();
 
-        // Set the config after reset and assert that objects have been recreated
         Queue::setConfig('test', [
             'url' => 'null://',
         ]);

@@ -1,77 +1,94 @@
 <?php
-// @codingStandardsIgnoreFile
+declare(strict_types=1);
 
-$findRoot = function () {
-    $root = __DIR__;
-    for ($i = 0; $i < 3; $i++) {
-        $root = dirname($root);
-        if (is_dir($root . '/vendor/cakephp/cakephp')) {
-            return $root;
-        }
-    }
-};
+use Cake\Cache\Cache;
+use Cake\Core\Configure;
+use Cake\Datasource\ConnectionManager;
+use Cake\I18n\I18n;
+use Cake\TestSuite\Fixture\SchemaLoader;
+use Cake\Utility\Security;
+use function Cake\Core\env;
 
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
-define('ROOT', $findRoot());
-define('APP_DIR', 'App');
+define('ROOT', dirname(__DIR__));
+define('APP_DIR', 'TestApp');
 define('WEBROOT_DIR', 'webroot');
-define('APP', ROOT . '/tests/App/');
-define('CONFIG', ROOT . '/tests/config/');
-define('WWW_ROOT', ROOT . DS . WEBROOT_DIR . DS);
-define('TESTS', ROOT . DS . 'tests' . DS);
-define('TMP', ROOT . DS . 'tmp' . DS);
+
+define('TMP', sys_get_temp_dir() . DS);
 define('LOGS', TMP . 'logs' . DS);
 define('CACHE', TMP . 'cache' . DS);
-define('CAKE_CORE_INCLUDE_PATH', ROOT . '/vendor/cakephp/cakephp');
+define('SESSIONS', TMP . 'sessions' . DS);
+
+define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'vendor' . DS . 'cakephp' . DS . 'cakephp');
 define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
 define('CAKE', CORE_PATH . 'src' . DS);
+define('CORE_TESTS', CORE_PATH . 'tests' . DS);
+define('CORE_TEST_CASES', CORE_TESTS . 'TestCase');
+define('TEST_APP', ROOT . DS . 'tests' . DS);
+
+define('APP', TEST_APP . 'App' . DS);
+define('WWW_ROOT', TEST_APP . 'webroot' . DS);
+define('CONFIG', TEST_APP . 'config' . DS);
 
 require ROOT . '/vendor/autoload.php';
-require CORE_PATH . 'config/bootstrap.php';
+require ROOT . '/vendor/cakephp/cakephp/src/functions.php';
+require_once CORE_PATH . 'config/bootstrap.php';
 
-Cake\Core\Configure::write('App', ['namespace' => 'App']);
-Cake\Core\Configure::write('debug', true);
+date_default_timezone_set('UTC');
+mb_internal_encoding('UTF-8');
 
-$TMP = new \Cake\Filesystem\Folder(TMP);
-$TMP->create(TMP . 'cache/models', 0777);
-$TMP->create(TMP . 'cache/persistent', 0777);
-$TMP->create(TMP . 'cache/views', 0777);
+foreach ([TMP, LOGS, CACHE, TMP . 'cache' . DS . 'models', TMP . 'cache' . DS . 'persistent', TMP . 'cache' . DS . 'views'] as $dir) {
+    if (!is_dir($dir)) {
+        mkdir($dir, 0777, true);
+    }
+}
 
-$cache = [
-    'default' => [
-        'engine' => 'File'
+Configure::write('debug', filter_var(env('DEBUG', 'true'), FILTER_VALIDATE_BOOLEAN));
+Configure::write('App', [
+    'namespace' => 'Josegonzalez\CakeQueuesadilla\Test\App',
+    'encoding' => 'UTF-8',
+    'defaultLocale' => I18n::getDefaultLocale(),
+    'paths' => [
+        'plugins' => [dirname(APP) . DS . 'plugins' . DS],
+        'templates' => [APP . 'Template' . DS],
     ],
-    '_cake_core_' => [
-        'className' => 'File',
-        'prefix' => 'cake_queuesadilla_myapp_cake_core_',
-        'path' => CACHE . 'persistent/',
-        'serialize' => true,
-        'duration' => '+10 seconds'
-    ],
-    '_cake_model_' => [
-        'className' => 'File',
-        'prefix' => 'cake_queuesadilla_my_app_cake_model_',
-        'path' => CACHE . 'models/',
-        'serialize' => 'File',
-        'duration' => '+10 seconds'
-    ]
-];
-
-Cake\Cache\Cache::setConfig($cache);
-Cake\Core\Configure::write('Session', [
-    'defaults' => 'php'
 ]);
 
-Cake\Core\Plugin::getCollection()->add(new Josegonzalez\CakeQueuesadilla\Plugin());
+Cache::setConfig([
+    'default' => [
+        'engine' => 'File',
+    ],
+    '_cake_core_' => [
+        'engine' => 'File',
+        'prefix' => 'cake_queuesadilla_cake_core_',
+        'serialize' => true,
+    ],
+    '_cake_model_' => [
+        'engine' => 'File',
+        'prefix' => 'cake_queuesadilla_cake_model_',
+        'serialize' => true,
+    ],
+]);
 
-// Ensure default test connection is defined
+Configure::write('Session', [
+    'defaults' => 'php',
+]);
+
+Security::setSalt('queuesadilla-test-salt-not-for-production-use-only');
+Configure::write('App.fullBaseUrl', '');
+
 if (!getenv('db_dsn')) {
     putenv('db_dsn=sqlite:///:memory:');
 }
 
-Cake\Datasource\ConnectionManager::setConfig('test', [
+ConnectionManager::setConfig('test', [
     'url' => getenv('db_dsn'),
-    'timezone' => 'UTC'
+    'timezone' => 'UTC',
 ]);
+
+if (env('FIXTURE_SCHEMA_METADATA')) {
+    $loader = new SchemaLoader();
+    $loader->loadInternalFile(env('FIXTURE_SCHEMA_METADATA'));
+}
