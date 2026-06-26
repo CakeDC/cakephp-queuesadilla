@@ -4,9 +4,17 @@ namespace josegonzalez\Queuesadilla\Engine;
 
 use josegonzalez\Queuesadilla\Engine\RedisEngine;
 use josegonzalez\Queuesadilla\FixtureData;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use RedisException;
 
+/**
+ * @property string $url
+ * @property array<string, mixed> $config
+ * @property LoggerInterface $Logger
+ * @property RedisEngine $Engine
+ * @property FixtureData $Fixtures
+ * @property class-string<EngineInterface> $engineClass
+ */
 class RedisEngineTest extends EngineTestCase
 {
     public function setUp() : void
@@ -94,7 +102,7 @@ class RedisEngineTest extends EngineTestCase
         $Engine = $this->mockEngine(['redisInstance']);
         $Engine->expects($this->once())
                 ->method('redisInstance')
-                ->will($this->throwException(new RedisException));
+                ->will($this->throwException(new \Exception('Connection refused')));
 
         $this->assertFalse($Engine->connect());
     }
@@ -113,10 +121,6 @@ class RedisEngineTest extends EngineTestCase
      */
     public function testAcknowledge()
     {
-        $this->assertFalse($this->Engine->acknowledge(null));
-        $this->assertFalse($this->Engine->acknowledge(false));
-        $this->assertFalse($this->Engine->acknowledge(1));
-        $this->assertFalse($this->Engine->acknowledge('string'));
         $this->assertFalse($this->Engine->acknowledge(['key' => 'value']));
         $this->assertFalse($this->Engine->acknowledge($this->Fixtures->default['first']));
 
@@ -130,10 +134,6 @@ class RedisEngineTest extends EngineTestCase
      */
     public function testReject()
     {
-        $this->assertFalse($this->Engine->reject(null));
-        $this->assertFalse($this->Engine->reject(false));
-        $this->assertFalse($this->Engine->reject(1));
-        $this->assertFalse($this->Engine->reject('string'));
         $this->assertFalse($this->Engine->reject(['key' => 'value']));
         $this->assertFalse($this->Engine->reject($this->Fixtures->default['first']));
 
@@ -147,9 +147,9 @@ class RedisEngineTest extends EngineTestCase
      */
     public function testPop()
     {
-        $this->assertNull($this->Engine->pop('default'));
-        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], 'default'));
-        $this->assertEquals($this->Fixtures->default['first'], $this->Engine->pop('default'));
+        $this->assertNull($this->Engine->pop(['queue' => 'default']));
+        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], ['queue' => 'default']));
+        $this->assertEquals($this->Fixtures->default['first'], $this->Engine->pop(['queue' => 'default']));
     }
 
     /**
@@ -157,14 +157,14 @@ class RedisEngineTest extends EngineTestCase
      */
     public function testPush()
     {
-        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], 'default'));
+        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], ['queue' => 'default']));
         $this->assertTrue($this->Engine->push($this->Fixtures->default['second'], [
             'delay' => 30,
         ]));
         $this->assertTrue($this->Engine->push($this->Fixtures->other['third'], [
             'expires_in' => 1,
         ]));
-        $this->assertTrue($this->Engine->push($this->Fixtures->default['fourth'], 'default'));
+        $this->assertTrue($this->Engine->push($this->Fixtures->default['fourth'], ['queue' => 'default']));
 
         sleep(2);
 
@@ -191,16 +191,16 @@ class RedisEngineTest extends EngineTestCase
      */
     public function testRelease()
     {
-        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], 'default'));
-        $this->assertEquals($this->Fixtures->default['first'], $this->Engine->pop('default'));
+        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], ['queue' => 'default']));
+        $this->assertEquals($this->Fixtures->default['first'], $this->Engine->pop(['queue' => 'default']));
 
-        $this->assertFalse($this->Engine->release(null, 'default'));
+        $this->assertFalse($this->Engine->release([], ['queue' => 'default']));
 
-        $this->assertEquals(false, $this->Engine->release($this->Fixtures->default['second'], 'default'));
-        $this->assertEquals(null, $this->Engine->pop('default'));
+        $this->assertEquals(false, $this->Engine->release($this->Fixtures->default['second'], ['queue' => 'default']));
+        $this->assertEquals(null, $this->Engine->pop(['queue' => 'default']));
 
-        $this->assertEquals(1, $this->Engine->release($this->Fixtures->default['fifth'], 'default'));
-        $this->assertEquals($this->Fixtures->default['fifth'], $this->Engine->pop('default'));
+        $this->assertEquals(1, $this->Engine->release($this->Fixtures->default['fifth'], ['queue' => 'default']));
+        $this->assertEquals($this->Fixtures->default['fifth'], $this->Engine->pop(['queue' => 'default']));
     }
     /**
      * @covers josegonzalez\Queuesadilla\Engine\RedisEngine::queues

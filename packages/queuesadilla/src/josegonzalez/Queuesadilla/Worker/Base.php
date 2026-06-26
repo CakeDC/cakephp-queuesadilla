@@ -62,7 +62,7 @@ abstract class Base extends MultiEventListener
         return $this;
     }
 
-    public function implementedEvents()
+    public function implementedEvents(): array
     {
         return [];
     }

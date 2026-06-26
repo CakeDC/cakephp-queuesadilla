@@ -27,7 +27,7 @@ class StatsListener extends MultiEventListener
         ];
     }
 
-    public function implementedEvents()
+    public function implementedEvents(): array
     {
         return [
             'Worker.connectionFailed' => 'connectionFailed',

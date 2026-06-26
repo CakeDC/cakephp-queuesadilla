@@ -43,7 +43,7 @@ class MysqlEngine extends PdoEngine
     /**
      * {@inheritDoc}
      */
-    public function connect()
+    public function connect(): bool
     {
         $config = $this->settings;
         if (empty($config['flags'])) {

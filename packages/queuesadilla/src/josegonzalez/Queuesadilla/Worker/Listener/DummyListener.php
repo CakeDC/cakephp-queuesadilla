@@ -17,7 +17,7 @@ class DummyListener extends MultiEventListener
         $this->setLogger($logger);
     }
 
-    public function implementedEvents()
+    public function implementedEvents(): array
     {
         return [
             'Worker.connectionFailed' => 'perform',

@@ -166,14 +166,14 @@ abstract class AbstractPdoEngineTest extends EngineTestCase
         if ($this->Engine->connection() === null) {
             $this->markTestSkipped('No connection to database available');
         }
-        $this->assertNull($this->Engine->pop('default'));
+        $this->assertNull($this->Engine->pop(['queue' => 'default']));
         $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], ['queue' => 'default', 'priority' => 4]));
         $this->assertTrue($this->Engine->push($this->Fixtures->default['second'], ['queue' => 'default', 'priority' => 1]));
         $this->assertTrue($this->Engine->push($this->Fixtures->default['third'], ['queue' => 'default', 'priority' => 3]));
         $msg = 'We should have returned the second job, as it has the lowest priority';
         $secondJobFixture = $this->Fixtures->default['second'];
         $secondJobFixture['options']['priority'] = 1;
-        $this->assertEquals($secondJobFixture, $this->Engine->pop('default'), $msg);
+        $this->assertEquals($secondJobFixture, $this->Engine->pop(['queue' => 'default']), $msg);
     }
 
     /**
@@ -189,7 +189,7 @@ abstract class AbstractPdoEngineTest extends EngineTestCase
         if ($this->Engine->connection() === null) {
             $this->markTestSkipped('No connection to database available');
         }
-        $this->assertNull($this->Engine->pop('default'));
+        $this->assertNull($this->Engine->pop(['queue' => 'default']));
         $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], ['queue' => 'default', 'priority' => 4]));
         sleep(1);
         $this->assertTrue($this->Engine->push($this->Fixtures->default['second'], ['queue' => 'default', 'priority' => 1]));
@@ -214,14 +214,14 @@ abstract class AbstractPdoEngineTest extends EngineTestCase
         if ($this->Engine->connection() === null) {
             $this->markTestSkipped('No connection to database available');
         }
-        $this->assertNull($this->Engine->pop('default'));
+        $this->assertNull($this->Engine->pop(['queue' => 'default']));
         $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], ['queue' => 'default', 'priority' => 4]));
         $this->assertTrue($this->Engine->push($this->Fixtures->default['second'], ['queue' => 'default', 'priority' => 1]));
         $this->assertTrue($this->Engine->push($this->Fixtures->default['third'], ['queue' => 'default', 'priority' => 3]));
         $msg = 'We should have returned the second job, as it has the lowest priority';
         $secondJobFixture = $this->Fixtures->default['second'];
         $secondJobFixture['options']['priority'] = 1;
-        $this->assertEquals($secondJobFixture, $this->Engine->pop('default'), $msg);
+        $this->assertEquals($secondJobFixture, $this->Engine->pop(['queue' => 'default']), $msg);
     }
 
     /**
@@ -234,14 +234,14 @@ abstract class AbstractPdoEngineTest extends EngineTestCase
         if ($this->Engine->connection() === null) {
             $this->markTestSkipped('No connection to database available');
         }
-        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], 'default'));
+        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], ['queue' => 'default']));
         $this->assertTrue($this->Engine->push($this->Fixtures->default['second'], [
             'delay' => 30
         ]));
         $this->assertTrue($this->Engine->push($this->Fixtures->other['third'], [
             'expires_in' => 1,
         ]));
-        $this->assertTrue($this->Engine->push($this->Fixtures->default['fourth'], 'default'));
+        $this->assertTrue($this->Engine->push($this->Fixtures->default['fourth'], ['queue' => 'default']));
         sleep(2);
 
         $pop1 = $this->Engine->pop();
@@ -269,9 +269,9 @@ abstract class AbstractPdoEngineTest extends EngineTestCase
         if ($this->Engine->connection() === null) {
             $this->markTestSkipped('No connection to database available');
         }
-        $this->assertFalse($this->Engine->release(null, 'default'));
+        $this->assertFalse($this->Engine->release(null, ['queue' => 'default']));
 
-        $this->Engine->push($this->Fixtures->default['first'], 'default');
+        $this->Engine->push($this->Fixtures->default['first'], ['queue' => 'default']);
         $item = $this->Engine->pop();
         $this->assertTrue($this->Engine->release($item));
         $sth = $this->execute($this->Engine->connection(), 'SELECT * FROM jobs WHERE id = ' . $this->Fixtures->default['first']['id']);

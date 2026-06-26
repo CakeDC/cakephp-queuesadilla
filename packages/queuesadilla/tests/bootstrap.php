@@ -25,6 +25,11 @@ foreach ([
     }
 }
 
+$mongoTestUrl = getenv('MONGO_TEST_URL');
+if ($mongoTestUrl && !getenv('MONGO_URL')) {
+    putenv('MONGO_URL=' . $mongoTestUrl);
+}
+
 /**
  * Path trickery ensures test suite will always run, standalone or within
  * another composer package. Designed to find composer autoloader and require

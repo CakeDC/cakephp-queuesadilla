@@ -21,7 +21,7 @@ class MemoryEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function connect()
+    public function connect(): bool
     {
         return $this->connection = true;
     }
@@ -29,7 +29,7 @@ class MemoryEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function acknowledge($item)
+    public function acknowledge(array $item): bool
     {
         if (!parent::acknowledge($item)) {
             return false;
@@ -55,7 +55,7 @@ class MemoryEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function reject($item)
+    public function reject(array $item): bool
     {
         return $this->acknowledge($item);
     }
@@ -63,7 +63,7 @@ class MemoryEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function pop($options = [])
+    public function pop(array $options = []): ?array
     {
         $queue = $this->setting($options, 'queue');
         $this->requireQueue($options);
@@ -108,7 +108,7 @@ class MemoryEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function push($item, $options = [])
+    public function push(array $item, array $options = []): bool
     {
         if (!is_array($options)) {
             $options = ['queue' => $options];
@@ -146,7 +146,7 @@ class MemoryEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function queues()
+    public function queues(): array
     {
         return array_keys($this->queues);
     }
@@ -154,7 +154,7 @@ class MemoryEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function release($item, $options = [])
+    public function release(array $item, array $options = []): bool
     {
         $queue = $this->setting($options, 'queue');
         $this->requireQueue($options);

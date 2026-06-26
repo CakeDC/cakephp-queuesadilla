@@ -91,13 +91,15 @@ class TestCase extends \PHPUnit\Framework\TestCase
                 $this->returns = $returns;
             }
 
-            public function pop($options = [])
+            public function pop(array $options = []): ?array
             {
                 if (!array_key_exists($this->index, $this->returns)) {
-                    return false;
+                    return null;
                 }
 
-                return $this->returns[$this->index++];
+                $value = $this->returns[$this->index++];
+
+                return is_array($value) ? $value : null;
             }
         };
     }

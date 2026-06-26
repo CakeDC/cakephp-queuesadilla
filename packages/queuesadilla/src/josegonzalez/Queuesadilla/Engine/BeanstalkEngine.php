@@ -4,6 +4,7 @@ namespace josegonzalez\Queuesadilla\Engine;
 
 use DateInterval;
 use DateTime;
+use Exception;
 use josegonzalez\Queuesadilla\Utility\Pheanstalk;
 use josegonzalez\Queuesadilla\Engine;
 use Pheanstalk\Command\DeleteCommand;
@@ -26,7 +27,7 @@ class BeanstalkEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function getJobClass()
+    public function getJobClass(): string
     {
         return '\\josegonzalez\\Queuesadilla\\Job\\BeanstalkJob';
     }
@@ -34,7 +35,7 @@ class BeanstalkEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function connect()
+    public function connect(): bool
     {
         $this->connection = new Pheanstalk(
             $this->config('host'),
@@ -48,7 +49,7 @@ class BeanstalkEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function acknowledge($item)
+    public function acknowledge(array $item): bool
     {
         if (!parent::acknowledge($item)) {
             return false;
@@ -65,7 +66,7 @@ class BeanstalkEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function reject($item)
+    public function reject(array $item): bool
     {
         return $this->acknowledge($item);
     }
@@ -73,7 +74,7 @@ class BeanstalkEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function pop($options = [])
+    public function pop(array $options = []): ?array
     {
         $queue = $this->setting($options, 'queue');
         $this->connection()->useTube($queue);
@@ -97,7 +98,7 @@ class BeanstalkEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function push($item, $options = [])
+    public function push(array $item, array $options = []): bool
     {
         if (!is_array($options)) {
             $options = ['queue' => $options];
@@ -137,7 +138,7 @@ class BeanstalkEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function queues()
+    public function queues(): array
     {
         return $this->connection()->listTubes();
     }
@@ -145,7 +146,7 @@ class BeanstalkEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function release($item, $options = [])
+    public function release(array $item, array $options = []): bool
     {
         $queue = $this->setting($options, 'queue');
         $delay = $this->setting($options, 'delay', PheanstalkInterface::DEFAULT_DELAY);

@@ -4,8 +4,17 @@ namespace josegonzalez\Queuesadilla\Engine;
 
 use josegonzalez\Queuesadilla\Engine\NullEngine;
 use josegonzalez\Queuesadilla\FixtureData;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
+/**
+ * @property string $url
+ * @property array<string, mixed> $config
+ * @property LoggerInterface $Logger
+ * @property NullEngine $Engine
+ * @property FixtureData $Fixtures
+ * @property class-string<EngineInterface> $engineClass
+ */
 class NullEngineTest extends EngineTestCase
 {
     public function setUp() : void
@@ -69,7 +78,7 @@ class NullEngineTest extends EngineTestCase
     public function testLastJobId()
     {
         $this->assertNull($this->Engine->lastJobId());
-        $this->assertTrue($this->Engine->push(null, 'default'));
+        $this->assertTrue($this->Engine->push([], ['queue' => 'default']));
         $this->assertTrue($this->Engine->lastJobId());
     }
 
@@ -79,15 +88,11 @@ class NullEngineTest extends EngineTestCase
      */
     public function testAcknowledge()
     {
-        $this->assertFalse($this->Engine->acknowledge(null));
-        $this->assertFalse($this->Engine->acknowledge(false));
-        $this->assertFalse($this->Engine->acknowledge(1));
-        $this->assertFalse($this->Engine->acknowledge('string'));
         $this->assertFalse($this->Engine->acknowledge(['key' => 'value']));
 
         $this->assertTrue($this->Engine->acknowledge($this->Fixtures->default['first']));
         $this->Engine->return = false;
-        $this->assertFalse($this->Engine->acknowledge(null));
+        $this->assertFalse($this->Engine->acknowledge($this->Fixtures->default['first']));
     }
 
     /**
@@ -96,15 +101,11 @@ class NullEngineTest extends EngineTestCase
      */
     public function testReject()
     {
-        $this->assertFalse($this->Engine->reject(null));
-        $this->assertFalse($this->Engine->reject(false));
-        $this->assertFalse($this->Engine->reject(1));
-        $this->assertFalse($this->Engine->reject('string'));
         $this->assertFalse($this->Engine->reject(['key' => 'value']));
 
         $this->assertTrue($this->Engine->reject($this->Fixtures->default['first']));
         $this->Engine->return = false;
-        $this->assertFalse($this->Engine->reject(null));
+        $this->assertFalse($this->Engine->reject($this->Fixtures->default['first']));
     }
 
     /**
@@ -148,10 +149,11 @@ class NullEngineTest extends EngineTestCase
      */
     public function testPop()
     {
-        $this->assertTrue($this->Engine->pop('default'));
+        $this->Engine->return = $this->Fixtures->default['first'];
+        $this->assertSame($this->Fixtures->default['first'], $this->Engine->pop(['queue' => 'default']));
 
         $this->Engine->return = false;
-        $this->assertFalse($this->Engine->pop('default'));
+        $this->assertNull($this->Engine->pop(['queue' => 'default']));
     }
 
     /**
@@ -160,10 +162,10 @@ class NullEngineTest extends EngineTestCase
      */
     public function testPush()
     {
-        $this->assertTrue($this->Engine->push(null, 'default'));
+        $this->assertTrue($this->Engine->push([], ['queue' => 'default']));
 
         $this->Engine->return = false;
-        $this->assertFalse($this->Engine->connect(null, 'default'));
+        $this->assertFalse($this->Engine->push([], ['queue' => 'default']));
     }
 
     /**
@@ -172,10 +174,10 @@ class NullEngineTest extends EngineTestCase
      */
     public function testRelease()
     {
-        $this->assertTrue($this->Engine->release(null, 'default'));
+        $this->assertTrue($this->Engine->release([], ['queue' => 'default']));
 
         $this->Engine->return = false;
-        $this->assertFalse($this->Engine->release(null, 'default'));
+        $this->assertFalse($this->Engine->release([], ['queue' => 'default']));
     }
 
     /**

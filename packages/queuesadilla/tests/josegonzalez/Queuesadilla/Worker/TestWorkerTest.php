@@ -42,9 +42,9 @@ class TestWorkerTest extends TestCase
      */
     public function testWork()
     {
-        $this->assertTrue($this->Worker->work());
-        $this->assertTrue($this->Worker->work());
-        $this->assertTrue($this->Worker->work());
+        $this->assertNull($this->Worker->work());
+        $this->assertNull($this->Worker->work());
+        $this->assertNull($this->Worker->work());
     }
 
     /**

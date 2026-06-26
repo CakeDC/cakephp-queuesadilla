@@ -4,9 +4,15 @@ namespace josegonzalez\Queuesadilla\Utility;
 
 trait SettingTrait
 {
-    protected $settings = [];
+    /**
+     * @var array<string, mixed>
+     */
+    protected array $settings = [];
 
-    public function config($key = null, $value = null)
+    /**
+     * @param array<string, mixed>|string|null $key
+     */
+    public function config(null|string|array $key = null, mixed $value = null): mixed
     {
         if (is_array($key)) {
             $this->settings = array_merge($this->settings, $key);
@@ -28,7 +34,10 @@ trait SettingTrait
         return $this->settings[$key] = $value;
     }
 
-    public function setting($settings, $key, $default = null)
+    /**
+     * @param array<string, mixed>|string $settings
+     */
+    public function setting(array|string $settings, string $key, mixed $default = null): mixed
     {
         if (!is_array($settings)) {
             $settings = ['queue' => $settings];

@@ -34,6 +34,6 @@ class LoggerTraitTest extends TestCase
     public function testLogger()
     {
         $subject = $this->getObjectForTrait('josegonzalez\Queuesadilla\Utility\LoggerTrait');
-        $this->assertNull($subject->logger());
+        $this->assertInstanceOf(NullLogger::class, $subject->logger());
     }
 }

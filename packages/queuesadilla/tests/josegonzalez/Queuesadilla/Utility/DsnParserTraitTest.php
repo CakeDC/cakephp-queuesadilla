@@ -79,7 +79,7 @@ class DsnParserTraitTest extends TestCase
      */
     public function testParseDsnThrowsException()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\TypeError::class);
         $subject = $this->getObjectForTrait('josegonzalez\Queuesadilla\Utility\DsnParserTrait');
         $this->assertEquals([], $subject->parseDsn(['not-empty']));
     }

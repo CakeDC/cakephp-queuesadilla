@@ -4,18 +4,35 @@ namespace josegonzalez\Queuesadilla\Engine;
 
 use josegonzalez\Queuesadilla\FixtureData;
 use josegonzalez\Queuesadilla\TestCase;
+use Psr\Log\LoggerInterface;
 
+/**
+ * Base test case for queue engine integration tests.
+ *
+ * @property string $url
+ * @property array<string, mixed> $config
+ * @property LoggerInterface $Logger
+ * @property EngineInterface $Engine
+ * @property FixtureData $Fixtures
+ * @property class-string<EngineInterface> $engineClass
+ */
 abstract class EngineTestCase extends TestCase
 {
-    protected $url;
+    protected string $url;
 
-    protected $config;
+    /**
+     * @var array<string, mixed>
+     */
+    protected array $config;
 
-    protected $Logger;
+    protected LoggerInterface $Logger;
 
-    protected $Engine;
+    protected EngineInterface $Engine;
 
-    protected $Fixtures;
+    protected FixtureData $Fixtures;
 
-    protected $engineClass;
+    /**
+     * @var class-string<EngineInterface>
+     */
+    protected string $engineClass;
 }

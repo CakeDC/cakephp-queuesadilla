@@ -14,7 +14,7 @@ class PredisEngine extends RedisEngine
     /**
      * {@inheritDoc}
      */
-    public function connect()
+    public function connect(): bool
     {
         try {
             $return = parent::connect();

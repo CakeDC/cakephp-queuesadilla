@@ -6,71 +6,55 @@ use josegonzalez\Queuesadilla\Engine\Base;
 
 class NullEngine extends Base
 {
+    /**
+     * @var array<string, mixed>
+     */
     protected $baseConfig = [
         'queue' => 'default',
     ];
 
-    public $return = true;
+    public bool|array|null $return = true;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function connect()
+    public function connect(): bool
     {
-        return $this->connection = $this->return;
+        $this->connection = $this->return;
+
+        return (bool)$this->return;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function acknowledge($item)
+    public function acknowledge(array $item): bool
     {
         if (!parent::acknowledge($item)) {
             return false;
         }
 
-        return $this->return;
+        return (bool)$this->return;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function reject($item)
+    public function reject(array $item): bool
     {
         return $this->acknowledge($item);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function pop($options = [])
+    public function pop(array $options = []): ?array
     {
-        return $this->return;
+        return is_array($this->return) ? $this->return : null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function push($item, $options = [])
+    public function push(array $item, array $options = []): bool
     {
         $this->lastJobId = $this->return;
 
-        return $this->return;
+        return (bool)$this->return;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function queues()
+    public function queues(): array
     {
         return [];
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function release($item, $options = [])
+    public function release(array $item, array $options = []): bool
     {
-        return $this->return;
+        return (bool)$this->return;
     }
 }

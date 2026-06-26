@@ -5,11 +5,9 @@ namespace josegonzalez\Queuesadilla\Event;
 /**
  * Objects implementing this interface should declare the `implementedEvents` function
  * to notify the event manager what methods should be called when an event is triggered.
- *
  */
 interface EventListenerInterface
 {
-
     /**
      * Returns a list of events this object is implementing. When the class is registered
      * in an event manager, each individual method will be associated with the respective event.
@@ -26,8 +24,8 @@ interface EventListenerInterface
      *  }
      * }}}
      *
-     * @return array associative array or event key names pointing to the function
+     * @return array<string, callable-string|array<string, mixed>> associative array of event key names pointing to the function
      * that should be called in the object when the respective event is fired
      */
-    public function implementedEvents();
+    public function implementedEvents(): array;
 }

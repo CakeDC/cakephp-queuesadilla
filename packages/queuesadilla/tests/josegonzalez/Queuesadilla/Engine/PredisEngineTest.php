@@ -151,9 +151,9 @@ class PredisEngineTest extends EngineTestCase
      */
     public function testPop()
     {
-        $this->assertNull($this->Engine->pop('default'));
-        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], 'default'));
-        $this->assertEquals($this->Fixtures->default['first'], $this->Engine->pop('default'));
+        $this->assertNull($this->Engine->pop(['queue' => 'default']));
+        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], ['queue' => 'default']));
+        $this->assertEquals($this->Fixtures->default['first'], $this->Engine->pop(['queue' => 'default']));
     }
 
     /**
@@ -161,14 +161,14 @@ class PredisEngineTest extends EngineTestCase
      */
     public function testPush()
     {
-        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], 'default'));
+        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], ['queue' => 'default']));
         $this->assertTrue($this->Engine->push($this->Fixtures->default['second'], [
             'delay' => 30,
         ]));
         $this->assertTrue($this->Engine->push($this->Fixtures->other['third'], [
             'expires_in' => 1,
         ]));
-        $this->assertTrue($this->Engine->push($this->Fixtures->default['fourth'], 'default'));
+        $this->assertTrue($this->Engine->push($this->Fixtures->default['fourth'], ['queue' => 'default']));
 
         sleep(2);
 
@@ -195,16 +195,16 @@ class PredisEngineTest extends EngineTestCase
      */
     public function testRelease()
     {
-        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], 'default'));
-        $this->assertEquals($this->Fixtures->default['first'], $this->Engine->pop('default'));
+        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], ['queue' => 'default']));
+        $this->assertEquals($this->Fixtures->default['first'], $this->Engine->pop(['queue' => 'default']));
 
-        $this->assertFalse($this->Engine->release(null, 'default'));
+        $this->assertFalse($this->Engine->release(null, ['queue' => 'default']));
 
-        $this->assertEquals(false, $this->Engine->release($this->Fixtures->default['second'], 'default'));
-        $this->assertEquals(null, $this->Engine->pop('default'));
+        $this->assertEquals(false, $this->Engine->release($this->Fixtures->default['second'], ['queue' => 'default']));
+        $this->assertEquals(null, $this->Engine->pop(['queue' => 'default']));
 
-        $this->assertEquals(1, $this->Engine->release($this->Fixtures->default['fifth'], 'default'));
-        $this->assertEquals($this->Fixtures->default['fifth'], $this->Engine->pop('default'));
+        $this->assertEquals(1, $this->Engine->release($this->Fixtures->default['fifth'], ['queue' => 'default']));
+        $this->assertEquals($this->Fixtures->default['fifth'], $this->Engine->pop(['queue' => 'default']));
     }
 
     /**

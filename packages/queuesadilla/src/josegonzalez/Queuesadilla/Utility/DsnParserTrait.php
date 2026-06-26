@@ -6,15 +6,15 @@ use InvalidArgumentException;
 
 trait DsnParserTrait
 {
-
-    public function parseDsn($dsn)
+    /**
+     * @return array<string, mixed>
+     */
+    public function parseDsn(string $dsn): array
     {
-        if (empty($dsn)) {
+        if ($dsn === '') {
             return [];
         }
-        if (!is_string($dsn)) {
-            throw new InvalidArgumentException('Only strings can be passed to parseDsn');
-        }
+
         $scheme = null;
         if (preg_match("/^([\w\\\]+)/", $dsn, $matches)) {
             $scheme = $matches[1];

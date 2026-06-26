@@ -32,7 +32,7 @@ class SequentialWorker extends Base
      *
      * @return array
      */
-    public function implementedEvents()
+    public function implementedEvents(): array
     {
         return [
             'Worker.job.empty' => 'jobEmpty',
@@ -70,7 +70,7 @@ class SequentialWorker extends Base
             $this->runtime += microtime(true) - $time;
             $time = microtime(true);
             $this->iterations++;
-            $item = $this->engine->pop($this->queue);
+            $item = $this->engine->pop(['queue' => $this->queue]);
             $this->dispatchEvent('Worker.job.seen', ['item' => $item]);
             if (empty($item)) {
                 $this->dispatchEvent('Worker.job.empty');

@@ -38,12 +38,12 @@ abstract class PdoEngine extends Base
      *
      * @return bool
      */
-    abstract public function connect();
+    abstract public function connect(): bool;
 
     /**
      * {@inheritDoc}
      */
-    public function acknowledge($item)
+    public function acknowledge(array $item): bool
     {
         if (!parent::acknowledge($item)) {
             return false;
@@ -61,7 +61,7 @@ abstract class PdoEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function reject($item)
+    public function reject(array $item): bool
     {
         return $this->acknowledge($item);
     }
@@ -69,7 +69,7 @@ abstract class PdoEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function pop($options = [])
+    public function pop(array $options = []): ?array
     {
         $queue = $this->setting($options, 'queue');
 
@@ -120,7 +120,7 @@ abstract class PdoEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function push($item, $options = [])
+    public function push(array $item, array $options = []): bool
     {
         if (!is_array($options)) {
             $options = ['queue' => $options];
@@ -184,7 +184,7 @@ abstract class PdoEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function queues()
+    public function queues(): array
     {
         $sql = implode(" ", [
             sprintf(
@@ -210,7 +210,7 @@ abstract class PdoEngine extends Base
     /**
      * {@inheritDoc}
      */
-    public function release($item, $options = [])
+    public function release(array $item, array $options = []): bool
     {
         if (isset($item['attempts']) && $item['attempts'] === 0) {
             return $this->reject($item);

@@ -62,10 +62,6 @@ class SynchronousEngineTest extends EngineTestCase
     public function testAcknowledge()
     {
         $Engine = $this->mockEngine();
-        $this->assertFalse($Engine->acknowledge(null));
-        $this->assertFalse($Engine->acknowledge(false));
-        $this->assertFalse($Engine->acknowledge(1));
-        $this->assertFalse($Engine->acknowledge('string'));
         $this->assertFalse($Engine->acknowledge(['key' => 'value']));
         $this->assertFalse($Engine->acknowledge($this->Fixtures->default['first']));
 
@@ -80,10 +76,6 @@ class SynchronousEngineTest extends EngineTestCase
     public function testReject()
     {
         $Engine = $this->mockEngine();
-        $this->assertFalse($Engine->reject(null));
-        $this->assertFalse($Engine->reject(false));
-        $this->assertFalse($Engine->reject(1));
-        $this->assertFalse($Engine->reject('string'));
         $this->assertFalse($Engine->reject(['key' => 'value']));
         $this->assertFalse($Engine->reject($this->Fixtures->default['first']));
 
@@ -101,14 +93,14 @@ class SynchronousEngineTest extends EngineTestCase
     public function testPush()
     {
         $Engine = $this->mockEngine();
-        $this->assertTrue($Engine->push($this->Fixtures->default['first'], 'default'));
+        $this->assertTrue($Engine->push($this->Fixtures->default['first'], ['queue' => 'default']));
         $this->assertTrue($Engine->push($this->Fixtures->default['second'], [
             'delay' => 30,
         ]));
         $this->assertTrue($Engine->push($this->Fixtures->other['third'], [
             'expires_in' => 1,
         ]));
-        $this->assertTrue($Engine->push($this->Fixtures->default['fourth'], 'default'));
+        $this->assertTrue($Engine->push($this->Fixtures->default['fourth'], ['queue' => 'default']));
 
         sleep(2);
 

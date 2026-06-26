@@ -2,27 +2,20 @@
 
 namespace josegonzalez\Queuesadilla\Engine;
 
-use josegonzalez\Queuesadilla\Engine\MemoryEngine;
 use josegonzalez\Queuesadilla\Worker\SequentialWorker;
 
 class SynchronousEngine extends MemoryEngine
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function push($class, $args = [], $options = [])
+    public function push(array $item, array $options = []): bool
     {
-        parent::push($class, $args, $options);
+        parent::push($item, $options);
         $worker = $this->getWorker();
 
-        return $worker->work();
+        return (bool)$worker->work();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function getWorker()
+    protected function getWorker(): SequentialWorker
     {
-        return new SequentialWorker($this, $this->logger, ['maxIterations' => 1]);
+        return new SequentialWorker($this, $this->logger(), ['maxIterations' => 1]);
     }
 }

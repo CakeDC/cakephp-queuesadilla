@@ -120,10 +120,10 @@ class BeanstalkEngineTest extends EngineTestCase
      */
     public function testPop()
     {
-        $this->assertNull($this->Engine->pop('default'));
-        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], 'default'));
+        $this->assertNull($this->Engine->pop(['queue' => 'default']));
+        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], ['queue' => 'default']));
 
-        $item = $this->Engine->pop('default');
+        $item = $this->Engine->pop(['queue' => 'default']);
         $this->assertIsArray($item);
         $this->assertArrayHasKey('class', $item);
         $this->assertArrayHasKey('args', $item);
@@ -137,14 +137,14 @@ class BeanstalkEngineTest extends EngineTestCase
      */
     public function testPush()
     {
-        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], 'default'));
+        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], ['queue' => 'default']));
         $this->assertTrue($this->Engine->push($this->Fixtures->default['second'], [
             'delay' => 30,
         ]));
         $this->assertTrue($this->Engine->push($this->Fixtures->other['third'], [
             'expires_in' => 1,
         ]));
-        $this->assertTrue($this->Engine->push($this->Fixtures->default['fourth'], 'default'));
+        $this->assertTrue($this->Engine->push($this->Fixtures->default['fourth'], ['queue' => 'default']));
 
         sleep(2);
 
@@ -168,11 +168,11 @@ class BeanstalkEngineTest extends EngineTestCase
      */
     public function testRelease()
     {
-        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], 'default'));
+        $this->assertTrue($this->Engine->push($this->Fixtures->default['first'], ['queue' => 'default']));
 
-        $item = $this->Engine->pop('default');
+        $item = $this->Engine->pop(['queue' => 'default']);
         $this->assertInstanceOf('\Pheanstalk\Job', $item['job']);
-        $this->assertTrue($this->Engine->release($item, 'default'));
+        $this->assertTrue($this->Engine->release($item, ['queue' => 'default']));
     }
 
     /**

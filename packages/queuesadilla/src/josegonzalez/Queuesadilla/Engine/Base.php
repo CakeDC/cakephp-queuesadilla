@@ -2,30 +2,32 @@
 
 namespace josegonzalez\Queuesadilla\Engine;
 
-use josegonzalez\Queuesadilla\Engine\EngineInterface;
-use josegonzalez\Queuesadilla\Job;
 use josegonzalez\Queuesadilla\Utility\DsnParserTrait;
 use josegonzalez\Queuesadilla\Utility\LoggerTrait;
 use josegonzalez\Queuesadilla\Utility\SettingTrait;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 abstract class Base implements EngineInterface
 {
-
     use DsnParserTrait;
 
     use LoggerTrait;
 
     use SettingTrait;
 
+    /**
+     * @var array<string, mixed>
+     */
     protected $baseConfig = [];
 
-    protected $connection = null;
+    protected mixed $connection = null;
 
-    public $lastJobId = null;
+    public string|bool|null $lastJobId = null;
 
-    public function __construct(?LoggerInterface $logger = null, $config = [])
+    /**
+     * @param array<string, mixed>|string $config
+     */
+    public function __construct(?LoggerInterface $logger = null, array|string $config = [])
     {
         if (is_array($config) && !empty($config['url'])) {
             $url = $config['url'];
@@ -38,16 +40,14 @@ abstract class Base implements EngineInterface
         $this->setLogger($logger);
         $this->config($this->baseConfig);
         $this->config($config);
-
-        return $this;
     }
 
-    public function getJobClass()
+    public function getJobClass(): string
     {
         return '\\josegonzalez\\Queuesadilla\\Job\\Base';
     }
 
-    public function connection()
+    public function connection(): mixed
     {
         if ($this->connection === null) {
             $this->connect();
@@ -56,17 +56,16 @@ abstract class Base implements EngineInterface
         return $this->connection;
     }
 
-    public function lastJobId()
+    public function lastJobId(): string|bool|null
     {
         return $this->lastJobId;
     }
 
-    public function acknowledge($item)
+    /**
+     * @param array<string, mixed> $item
+     */
+    public function acknowledge(array $item): bool
     {
-        if (!is_array($item)) {
-            return false;
-        }
-
         return !empty($item['id']) && !empty($item['queue']);
     }
 }

@@ -2,25 +2,28 @@
 
 namespace josegonzalez\Queuesadilla\Utility;
 
-use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 trait LoggerTrait
 {
-    protected $logger = null;
+    protected ?LoggerInterface $logger = null;
 
-    public function setLogger(?LoggerInterface $logger = null)
+    public function setLogger(?LoggerInterface $logger = null): LoggerInterface
     {
         if ($logger === null) {
-            $logger = new NullLogger;
+            $logger = new NullLogger();
         }
 
         return $this->logger = $logger;
     }
 
-    public function logger()
+    public function logger(): LoggerInterface
     {
+        if ($this->logger === null) {
+            $this->setLogger(null);
+        }
+
         return $this->logger;
     }
 }

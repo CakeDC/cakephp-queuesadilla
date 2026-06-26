@@ -31,6 +31,6 @@ class QueueTest extends TestCase
      */
     public function testPush()
     {
-        $this->assertTrue($this->Queue->push([]));
+        $this->assertTrue($this->Queue->push('TestJob'));
     }
 }

@@ -2,31 +2,28 @@
 
 namespace josegonzalez\Queuesadilla;
 
+use josegonzalez\Queuesadilla\Engine\EngineInterface;
 use josegonzalez\Queuesadilla\Event\EventManagerTrait;
 
 class Queue
 {
     use EventManagerTrait;
 
-    protected $engine;
+    protected EngineInterface $engine;
 
-    public function __construct($engine)
+    public function __construct(EngineInterface $engine)
     {
         $this->engine = $engine;
-
-        return $this;
     }
 
     /**
      * Push a single job onto the queue.
      *
-     * @param string $callable    a job callable
-     * @param array  $args        an array of data to set for the job
-     * @param array  $options     an array of options for publishing the job
-     *
-     * @return boolean the result of the push
-     **/
-    public function push($callable, $args = [], $options = [])
+     * @param string $callable a job callable
+     * @param array<int|string, mixed> $args an array of data to set for the job
+     * @param array<string, mixed> $options an array of options for publishing the job
+     */
+    public function push(string $callable, array $args = [], array $options = []): bool
     {
         $queue = $this->engine->setting($options, 'queue');
         $item = [
