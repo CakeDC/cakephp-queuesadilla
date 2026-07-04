@@ -14,25 +14,46 @@
         }
     ],
     "require": {
-        "cakephp/cakephp": "^4.0",
-        "php": ">=7.2",
-        "josegonzalez/queuesadilla": "0.0.*",
-        "ext-pcntl": "*"
+        "php": ">=8.4",
+        "cakephp/cakephp": "^5.0",
+        "league/event": "^2.0",
+        "psr/log": "^3.0"
+    },
+    "suggest": {
+        "ext-pcntl": "Required for queue worker processes on Unix"
     },
     "require-dev": {
-        "phpunit/phpunit": "~8.4.0",
-        "cakephp/cakephp-codesniffer": "~4.0.0",
-        "php-coveralls/php-coveralls": "^2.1"
+        "phpunit/phpunit": "^12.0",
+        "cakephp/cakephp-codesniffer": "^5.0",
+        "phpstan/phpstan": "^1.5"
     },
     "autoload": {
         "psr-4": {
-            "Josegonzalez\\CakeQueuesadilla\\": "src",
-            "Josegonzalez\\CakeQueuesadilla\\Test\\Fixture\\": "tests\\Fixture"
+            "Josegonzalez\\CakeQueuesadilla\\": "src"
+        },
+        "psr-0": {
+            "josegonzalez\\Queuesadilla": "packages/queuesadilla/src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Josegonzalez\\CakeQueuesadilla\\Test\\": "tests"
+            "Josegonzalez\\CakeQueuesadilla\\Test\\": "tests",
+            "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
+        }
+    },
+    "scripts": {
+        "check": [
+            "@cs-check",
+            "@stan"
+        ],
+        "cs-check": "phpcs -n -p --standard=phpcs.xml.dist",
+        "cs-fix": "phpcbf --standard=phpcs.xml.dist",
+        "stan": "phpstan analyse src/",
+        "test": "phpunit -c phpunit.xml.dist"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     }
 }

@@ -1,0 +1,5 @@
+parameters:
+    ignoreErrors:
+        -
+            message: '~Parameter #1 \$class of method Josegonzalez\\CakeQueuesadilla\\Queue\\QueueEngineRegistry::_create\(\) has no typehint specified~'
+            path: src/Queue/QueueEngineRegistry.php

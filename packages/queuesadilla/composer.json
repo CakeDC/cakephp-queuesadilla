@@ -1,0 +1,45 @@
+{
+    "name": "josegonzalez/queuesadilla",
+    "type": "library",
+    "description": "Queue background jobs to any backend system",
+    "keywords": ["php", "queue"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jose Diaz-Gonzalez",
+            "email": "queuesadilla@josegonzalez.com",
+            "homepage": "http://josediazgonzalez.com",
+            "role": "Maintainer"
+        }
+    ],
+    "require": {
+        "php": ">=8.4",
+        "psr/log": "^3.0",
+        "league/event": "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.0",
+        "cakephp/cakephp-codesniffer": "^5.0",
+        "phpstan/phpstan": "^1.5",
+        "monolog/monolog": "^3.0",
+        "mongodb/mongodb": "^2.0"
+    },
+    "suggest": {
+        "ext-pcntl": "Required for queue worker signal handling on Unix",
+        "ext-mongodb": "Required for MongoEngine",
+        "mongodb/mongodb": "Required for MongoEngine"
+    },
+    "autoload": {
+        "psr-0": {
+            "josegonzalez\\Queuesadilla": ["src", "tests"]
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": false
+        }
+    },
+    "scripts": {
+        "test": "phpunit -c phpunit.xml.dist"
+    }
+}
